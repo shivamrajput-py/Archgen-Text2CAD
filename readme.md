@@ -8,9 +8,10 @@
 [![Status](https://img.shields.io/badge/Status-Production-22c55e?style=for-the-badge)](https://archgen.in)
 [![Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20FreeCAD%20%7C%20Pinecone%20%7C%20Cohere-0ea5e9?style=for-the-badge)](#)
 
-> **Convert natural language engineering prompts into verified, executable 3D CAD models — fully autonomously.**
+> **Convert natural language engineering prompts into verified, executable 3D CAD models fully autonomously.**
 
-[▶ Watch Demo Video](#demo) · [Architecture Deep Dive](#architecture) · [Pipeline Stages](#pipeline) · [Evaluation](#evaluation)
+BETA V1 DEMO: https://drive.google.com/file/d/1ljeGkKTLkeY1NYRorgXlCsO1-D6xQrXs/view?usp=sharing
+
 
 </div>
 
@@ -18,7 +19,7 @@
 
 ## What is ArchgenCAD?
 
-ArchgenCAD is a production agentic AI system that takes a plain-language engineering prompt and returns a verified, executable FreeCAD Python script that produces a real 3D solid model — including STL, STEP, FCStd exports and an auto-generated 2D engineering drawing.
+ArchgenCAD is a production agentic AI system that takes a plain-language engineering prompt and returns a verified, executable FreeCAD Python script that produces a real 3D solid model including STL, STEP, FCStd exports and an auto-generated 2D engineering drawing.
 
 **Input:** `"Design a heavy-duty compression spring with 12mm wire diameter, 40mm coil radius, 200mm height, 25mm pitch"`
 
@@ -35,7 +36,7 @@ ArchgenCAD is a production agentic AI system that takes a plain-language enginee
 
 ## Demo
 
-> 🎥 Demo video embedded here — shows real-time generation of a compression spring, gear blank, and spiral staircase.
+> 🎥 Demo video embedded here   shows real-time generation of a compression spring, gear blank, and spiral staircase.
 
 ---
 
@@ -43,7 +44,7 @@ ArchgenCAD is a production agentic AI system that takes a plain-language enginee
 
 ArchgenCAD is built around a **multi-agent, multi-model orchestration pipeline** with 9 specialized agents, a hybrid RAG retrieval system, iterative refinement with cross-iteration memory, and a production queue that serializes FreeCAD execution for memory safety.
 
-The system runs entirely **autonomously** — from raw text to verified 3D geometry — with no human in the loop during generation.
+The system runs entirely **autonomously**   from raw text to verified 3D geometry   with no human in the loop during generation.
 
 ```
 Natural Language Prompt
@@ -198,12 +199,12 @@ flowchart TD
 
 ---
 
-## Pipeline Stages — Deep Dive
+## Pipeline Stages   Deep Dive
 
 ### Stage 1: Prompt Validation Agent
 **Model:** `Llama-3.1-8b` (fast, low-cost)
 
-The entry point does far more than validation — it's a **prompt engineering layer** that transforms vague user intent into a precise engineering specification.
+The entry point does far more than validation   it's a **prompt engineering layer** that transforms vague user intent into a precise engineering specification.
 
 | Task | What Happens |
 |---|---|
@@ -214,7 +215,7 @@ The entry point does far more than validation — it's a **prompt engineering la
 | **Scope Bounding** | Identifies what is NOT in scope (critical for over-engineering prevention) |
 | **Enhancement** | Adds FreeCAD-specific precision to vague geometric descriptions |
 
-**Key design decision:** Scope bounding explicitly — what the LLM should NOT generate — was found to reduce over-engineering from an average of 6.2 unrequested components to 0.3.
+**Key design decision:** Scope bounding explicitly   what the LLM should NOT generate   was found to reduce over-engineering from an average of 6.2 unrequested components to 0.3.
 
 ---
 
@@ -304,14 +305,14 @@ Output parsed line-by-line with regex error detection
 ```
 
 **Why headless subprocess (not Python import)?**
-FreeCAD's OCCT geometry kernel holds shared native state. Running it as a subprocess isolates memory completely — a crash in FreeCAD doesn't take down the API server. This also allows us to kill stuck processes with `subprocess.kill()`.
+FreeCAD's OCCT geometry kernel holds shared native state. Running it as a subprocess isolates memory completely   a crash in FreeCAD doesn't take down the API server. This also allows us to kill stuck processes with `subprocess.kill()`.
 
 **Error pattern matching:** 40+ regex patterns distinguish real Python tracebacks from FreeCAD's verbose but harmless console output (version banners, module load messages, etc.).
 
 ---
 
 ### Stage 5: Physics Checker
-**Type:** Pure Python — no LLM, fast (<100ms)
+**Type:** Pure Python   no LLM, fast (<100ms)
 
 Rule-based structural analysis on execution output:
 - **Topology sanity:** Face count vs. expected (e.g., `6 + N_holes` for a plate with holes)
@@ -328,12 +329,12 @@ Rule-based structural analysis on execution output:
 The renderer produces 4 isometric PNG renders of the STL at 1024×1024. A blank image detector filters out failed renders before sending to the VLM.
 
 The VLM is prompted to assess:
-1. **Structural plausibility** — Does this look physically realizable?
-2. **Geometric accuracy** — Do dimensions look proportionally correct?
-3. **Part completeness** — Are all requested features present?
-4. **Surface quality** — Are there visible artifacts, gaps, or intersecting faces?
+1. **Structural plausibility**   Does this look physically realizable?
+2. **Geometric accuracy**   Do dimensions look proportionally correct?
+3. **Part completeness**   Are all requested features present?
+4. **Surface quality**   Are there visible artifacts, gaps, or intersecting faces?
 
-This provides a **render-grounded quality signal** orthogonal to code-level execution — catching cases where code runs but produces visually wrong geometry.
+This provides a **render-grounded quality signal** orthogonal to code-level execution   catching cases where code runs but produces visually wrong geometry.
 
 ---
 
@@ -357,7 +358,7 @@ Aggregates all signals into a weighted composite score:
 ### Stage 8: Refinement Agent
 **Model:** Gemini 2.0 Pro (best model tier)
 
-Not a simple "fix the errors" loop — it maintains **cross-iteration state**:
+Not a simple "fix the errors" loop   it maintains **cross-iteration state**:
 
 ```python
 iteration_history = [
@@ -371,11 +372,11 @@ iteration_history = [
 
 **Improvement trend analysis:** If score is declining across iterations, the refinement agent switches strategy (e.g., from targeted fixes to full regeneration with different approach).
 
-**Best-result tracking:** Even if max iterations is reached without passing threshold, the best-scoring iteration that produced valid geometry is returned — ensuring the user always gets *something* useful.
+**Best-result tracking:** Even if max iterations is reached without passing threshold, the best-scoring iteration that produced valid geometry is returned   ensuring the user always gets *something* useful.
 
 ---
 
-## Hybrid RAG System — Architecture Detail
+## Hybrid RAG System   Architecture Detail
 
 ```mermaid
 flowchart LR
@@ -444,7 +445,7 @@ flowchart TB
         VERCEL[Vercel\nFrontend Static\nAuto-deploy from GitHub]
     end
 
-    subgraph BACKEND["Backend — AWS EC2 t3.small"]
+    subgraph BACKEND["Backend   AWS EC2 t3.small"]
         NGINX[Nginx Reverse Proxy\napi.archgen.in → :8000\n660s read timeout for FreeCAD]
         UVICORN[Uvicorn ASGI\nFastAPI application]
         SEM[asyncio.Semaphore\nGeneration Queue\nmax 1 concurrent FreeCAD]
@@ -487,7 +488,7 @@ flowchart TB
 
 | Decision | Why |
 |---|---|
-| **Subprocess isolation for FreeCAD** | FreeCAD's OCCT kernel holds native state — running in-process risks corrupting the server's memory. Subprocess gives us `kill()` and clean crash recovery. |
+| **Subprocess isolation for FreeCAD** | FreeCAD's OCCT kernel holds native state   running in-process risks corrupting the server's memory. Subprocess gives us `kill()` and clean crash recovery. |
 | **asyncio.Semaphore over job queue** | At beta scale, a semaphore is sufficient and zero-infrastructure. Redis/Celery adds operational complexity without benefit at <10 concurrent users. |
 | **Best-result tracking across iterations** | Users should never get nothing. Even if quality threshold isn't met, the best valid geometry across all iterations is returned. |
 | **Error memory across sessions** | Common FreeCAD API errors (e.g., "makeHelix returns Edge not Wire on OCCT 7.x") are persisted globally and injected into generation prompts for all future users. |
@@ -515,9 +516,9 @@ Overall Score = (execution × 0.25) + (quality × 0.30) + (visual × 0.25) + (ph
 | Mechanical (simple) | 6.8 | 8.0 | +1.2 |
 | Multi-component assembly | 4.4 | 7.2 | +2.8 |
 | Precision machined part | 4.8 | 8.5 | +3.7 |
-| Swept profile (spring) | — | 9.2 | New |
-| Array boolean (100 holes) | — | 6.8 | New |
-| Complex architecture | — | 6.5 | New |
+| Swept profile (spring) |   | 9.2 | New |
+| Array boolean (100 holes) |   | 6.8 | New |
+| Complex architecture |   | 6.5 | New |
 | **Average (weak cluster)** | **5.3** | **7.7** | **+2.4** |
 
 ### Failure Mode Taxonomy
@@ -536,9 +537,9 @@ Systematic evaluation identified 5 failure modes:
 
 ## Recognized
 
-- 🏆 **Top 8** — E-Cell IIT Kharagpur National Entrepreneurship Challenge
-- 🏆 **Shortlisted** — Ciena × Nasscom TechForChange 2024
-- 🏆 **Incubated** — DTU Innovation and Incubation Foundation (DTU IIF)
+- 🏆 **Top 8**   E-Cell IIT Kharagpur National Entrepreneurship Challenge
+- 🏆 **Shortlisted**   Ciena × Nasscom TechForChange 2024
+- 🏆 **Incubated**   DTU Innovation and Incubation Foundation (DTU IIF)
 - ✅ Validated across **23+ mechanical engineers and CAD professionals** in structured beta trials
 
 ---
