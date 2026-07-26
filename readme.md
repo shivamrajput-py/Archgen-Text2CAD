@@ -1,4 +1,4 @@
-# ArchgenCAD — Autonomous Text-to-CAD Generation System
+# ArchgenCAD | Autonomous Text-to-CAD Generation System
 
 <div align="center">
 
