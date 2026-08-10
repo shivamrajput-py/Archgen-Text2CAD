@@ -1,0 +1,1683 @@
+{
+  "patterns": [
+    {
+      "id": "err_001",
+      "pattern_regex": "ViewObject|ShapeColor|\\.ViewObject\\.",
+      "error_type": "headless_gui_reference",
+      "frequency": 16,
+      "last_seen": "2026-02-21T06:25:17.777968",
+      "root_cause": "LLM uses GUI-mode API in headless FreeCADCmd context",
+      "solution": "Remove all ViewObject, ShapeColor, and visual property references",
+      "prevention_prompt": "CRITICAL: This runs in headless mode (FreeCADCmd.exe). NEVER use obj.ViewObject, obj.ViewObject.ShapeColor, or any visual/display properties. They are None in headless mode and WILL crash.",
+      "verified": true
+    },
+    {
+      "id": "err_002",
+      "pattern_regex": "FreeCADGui|import Gui|Gui\\.",
+      "error_type": "gui_import",
+      "frequency": 8,
+      "last_seen": "2026-02-19T22:45:53.237457",
+      "root_cause": "LLM imports GUI module which doesn't exist in headless mode",
+      "solution": "Remove all FreeCADGui/Gui imports and references",
+      "prevention_prompt": "NEVER import or use FreeCADGui or Gui module. They do not exist in headless mode.",
+      "verified": true
+    },
+    {
+      "id": "err_003",
+      "pattern_regex": "Part\\.show|Part\\.Show",
+      "error_type": "gui_show_call",
+      "frequency": 5,
+      "last_seen": "2026-02-19T22:45:53.237457",
+      "root_cause": "Part.show() is a GUI function that fails in headless mode",
+      "solution": "Use doc.addObject('Part::Feature', name) instead of Part.show()",
+      "prevention_prompt": "Do NOT use Part.show(). Instead, add shapes to the document: obj = doc.addObject('Part::Feature', 'Name'); obj.Shape = your_shape",
+      "verified": true
+    },
+    {
+      "id": "err_004",
+      "pattern_regex": "ActiveDocument.*None|NoneType.*has no attribute",
+      "error_type": "null_document",
+      "frequency": 3,
+      "last_seen": "2026-02-19T22:45:53.237457",
+      "root_cause": "Script accesses App.ActiveDocument before creating one",
+      "solution": "Always create document first: doc = App.newDocument('Name')",
+      "prevention_prompt": "Always create the document at the top: doc = App.newDocument('ModelName'). Never rely on App.ActiveDocument being set automatically.",
+      "verified": true
+    },
+    {
+      "id": "err_005",
+      "pattern_regex": "fuse.*fuse.*fuse|\\.fuse\\(.*\\.fuse\\(",
+      "error_type": "excessive_boolean_chain",
+      "frequency": 8,
+      "last_seen": "2026-07-21T06:28:03.627883",
+      "root_cause": "Chaining too many boolean fuse/cut operations causes slowdown or crashes",
+      "solution": "Use Part.Compound for non-intersecting shapes, batch fuse operations",
+      "prevention_prompt": "AVOID chaining .fuse() calls (e.g. a.fuse(b).fuse(c).fuse(d)...). For non-intersecting shapes use Part.Compound([shapes]). For intersecting shapes, fuse in batches of 5-10.",
+      "verified": true
+    },
+    {
+      "id": "err_006",
+      "pattern_regex": "Error:\\ Execution\\ timed\\ out\\ after\\ 600\\ seconds",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-02-19T23:26:51.620524",
+      "root_cause": "Error: Execution timed out after 600 seconds",
+      "solution": "Fix: Error: Execution timed out after 600 seconds",
+      "prevention_prompt": "AVOID this error: Error: Execution timed out after 600 seconds",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_007",
+      "pattern_regex": "RuntimeError:\\ ware\\ licensed\\ under\\ the\\ terms\\ of\\ LGPL2\\+\\ license\\.\\\n\\\nException\\ while\\ processing\\ file:\\ C:/",
+      "error_type": "runtime_error",
+      "frequency": 40,
+      "last_seen": "2026-04-12T06:16:02.126557",
+      "root_cause": "RuntimeError: ware licensed under the terms of LGPL2+ license.\n\nException while processing file: C:/Users/98shi/AppData/Local/Temp/tmpy6anz50u.py [name 'floor_slab_thickness' is not defined]\n",
+      "solution": "Fix: RuntimeError: ware licensed under the terms of LGPL2+ license.\n\nException while processing file: C:/Users/98shi/AppData/Local/Temp/tmpy6anz50u.py [nam",
+      "prevention_prompt": "AVOID this error: RuntimeError: ware licensed under the terms of LGPL2+ license.\n\nException while processing file: C:/Users/98shi/AppData/Local/Temp/tmpy6anz50u.py [nam",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_008",
+      "pattern_regex": "ExecutionError:\\ Execution\\ Failed:\\ FreeCAD\\ 1\\.0\\.2,\\ Libs:\\ 1\\.0\\.2R39319\\ \\(Git\\)\\\n\\(C\\)\\ 2001\\-2025\\ FreeCAD\\ contr",
+      "error_type": "runtime_error",
+      "frequency": 5,
+      "last_seen": "2026-02-21T05:17:33.674052",
+      "root_cause": "ExecutionError: Execution Failed: FreeCAD 1.0.2, Libs: 1.0.2R39319 (Git)\n(C) 2001-2025 FreeCAD contributors\nFreeCAD is free and open-source software licensed under the terms of LGPL2+ license.",
+      "solution": "Fix: ExecutionError: Execution Failed: FreeCAD 1.0.2, Libs: 1.0.2R39319 (Git)\n(C) 2001-2025 FreeCAD contributors\nFreeCAD is free and open-source software l",
+      "prevention_prompt": "AVOID this error: ExecutionError: Execution Failed: FreeCAD 1.0.2, Libs: 1.0.2R39319 (Git)\n(C) 2001-2025 FreeCAD contributors\nFreeCAD is free and open-source software l",
+      "verified": false,
+      "category": "civil"
+    },
+    {
+      "id": "err_009",
+      "pattern_regex": "ExecutionError:\\ Execution\\ Failed:\\ FreeCAD\\ exited\\ with\\ return\\ code\\ 1\\ but\\ no\\ output\\ was\\ captured\\.",
+      "error_type": "runtime_error",
+      "frequency": 3,
+      "last_seen": "2026-02-21T05:29:39.085322",
+      "root_cause": "ExecutionError: Execution Failed: FreeCAD exited with return code 1 but no output was captured.",
+      "solution": "Fix: ExecutionError: Execution Failed: FreeCAD exited with return code 1 but no output was captured.",
+      "prevention_prompt": "AVOID this error: ExecutionError: Execution Failed: FreeCAD exited with return code 1 but no output was captured.",
+      "verified": false,
+      "category": "civil"
+    },
+    {
+      "id": "err_010",
+      "pattern_regex": "ExecutionError:\\ Execution\\ Failed:\\ FATAL\\ ERROR:\\ FreeCAD\\ crashed\\ silently\\ \\(Return\\ Code\\ 1\\)\\.\\ This\\ is\\ usu",
+      "error_type": "runtime_error",
+      "frequency": 2,
+      "last_seen": "2026-02-21T06:27:14.020954",
+      "root_cause": "ExecutionError: Execution Failed: FATAL ERROR: FreeCAD crashed silently (Return Code 1). This is usually a C++ Segmentation Fault caused by invalid geometry (e.g., zero-length edges, self-intersecting",
+      "solution": "Fix: ExecutionError: Execution Failed: FATAL ERROR: FreeCAD crashed silently (Return Code 1). This is usually a C++ Segmentation Fault caused by invalid ge",
+      "prevention_prompt": "AVOID this error: ExecutionError: Execution Failed: FATAL ERROR: FreeCAD crashed silently (Return Code 1). This is usually a C++ Segmentation Fault caused by invalid ge",
+      "verified": false,
+      "category": "civil"
+    },
+    {
+      "id": "err_011",
+      "pattern_regex": "SilentCrash:\\ Script\\ execution\\ aborted\\ silently\\ without\\ a\\ Python\\ traceback\\.\\ The\\ script\\ may\\ have\\ crash",
+      "error_type": "runtime_error",
+      "frequency": 9,
+      "last_seen": "2026-07-21T23:09:33.025580",
+      "root_cause": "SilentCrash: Script execution aborted silently without a Python traceback. The script may have crashed FreeCAD or exited early.",
+      "solution": "Fix: SilentCrash: Script execution aborted silently without a Python traceback. The script may have crashed FreeCAD or exited early.",
+      "prevention_prompt": "AVOID this error: SilentCrash: Script execution aborted silently without a Python traceback. The script may have crashed FreeCAD or exited early.",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_012",
+      "pattern_regex": "\\[Sanitizer\\ Warning\\]\\ High\\ loop\\ count\\ \\(28\\)\\.\\ Consider\\ using\\ Draft\\.array\\ for\\ repetitive\\ geometry\\.",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-12T16:39:30.918782",
+      "root_cause": "[Sanitizer Warning] High loop count (28). Consider using Draft.array for repetitive geometry.",
+      "solution": "Fix: [Sanitizer Warning] High loop count (28). Consider using Draft.array for repetitive geometry.",
+      "prevention_prompt": "AVOID this error: [Sanitizer Warning] High loop count (28). Consider using Draft.array for repetitive geometry.",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_013",
+      "pattern_regex": "\\[Sanitizer\\ Warning\\]\\ High\\ loop\\ count\\ \\(13\\)\\.\\ Consider\\ using\\ Draft\\.array\\ for\\ repetitive\\ geometry\\.",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-12T16:41:53.571419",
+      "root_cause": "[Sanitizer Warning] High loop count (13). Consider using Draft.array for repetitive geometry.",
+      "solution": "Fix: [Sanitizer Warning] High loop count (13). Consider using Draft.array for repetitive geometry.",
+      "prevention_prompt": "AVOID this error: [Sanitizer Warning] High loop count (13). Consider using Draft.array for repetitive geometry.",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_014",
+      "pattern_regex": "\\[Sanitizer\\ Warning\\]\\ High\\ loop\\ count\\ \\(29\\)\\.\\ Consider\\ using\\ Draft\\.array\\ for\\ repetitive\\ geometry\\.",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-12T16:43:17.758586",
+      "root_cause": "[Sanitizer Warning] High loop count (29). Consider using Draft.array for repetitive geometry.",
+      "solution": "Fix: [Sanitizer Warning] High loop count (29). Consider using Draft.array for repetitive geometry.",
+      "prevention_prompt": "AVOID this error: [Sanitizer Warning] High loop count (29). Consider using Draft.array for repetitive geometry.",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_015",
+      "pattern_regex": "SpreadsheetError:\\ FreeCAD\\ C\\+\\+\\ Error:\\ Invalid\\ cell\\ address\\ or\\ property:\\ B2\\ \\|\\ Fix:\\ Spreadsheet\\ cell\\ re",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-19T17:09:38.787028",
+      "root_cause": "SpreadsheetError: FreeCAD C++ Error: Invalid cell address or property: B2 | Fix: Spreadsheet cell reference is invalid. Do not use FreeCAD Spreadsheet objects in headless mode. Use plain Python variab",
+      "solution": "Fix: SpreadsheetError: FreeCAD C++ Error: Invalid cell address or property: B2 | Fix: Spreadsheet cell reference is invalid. Do not use FreeCAD Spreadsheet",
+      "prevention_prompt": "AVOID this error: SpreadsheetError: FreeCAD C++ Error: Invalid cell address or property: B2 | Fix: Spreadsheet cell reference is invalid. Do not use FreeCAD Spreadsheet",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_016",
+      "pattern_regex": "SyntaxError\\ \\(line\\ 1\\):\\ invalid\\ syntax",
+      "error_type": "runtime_error",
+      "frequency": 3,
+      "last_seen": "2026-07-21T21:11:37.645848",
+      "root_cause": "SyntaxError (line 1): invalid syntax",
+      "solution": "Fix: SyntaxError (line 1): invalid syntax",
+      "prevention_prompt": "AVOID this error: SyntaxError (line 1): invalid syntax",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_017",
+      "pattern_regex": "FreeCADInternalError:\\ FreeCAD\\ internal\\ error:\\ module\\ 'Part'\\ has\\ no\\ attribute\\ 'BRepOffsetAPI_MakePipe",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-21T19:53:22.159886",
+      "root_cause": "FreeCADInternalError: FreeCAD internal error: module 'Part' has no attribute 'BRepOffsetAPI_MakePipeShell' | Fix: The FreeCAD geometry kernel raised an internal exception. Simplify the geometry operat",
+      "solution": "Fix: FreeCADInternalError: FreeCAD internal error: module 'Part' has no attribute 'BRepOffsetAPI_MakePipeShell' | Fix: The FreeCAD geometry kernel raised a",
+      "prevention_prompt": "AVOID this error: FreeCADInternalError: FreeCAD internal error: module 'Part' has no attribute 'BRepOffsetAPI_MakePipeShell' | Fix: The FreeCAD geometry kernel raised a",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_018",
+      "pattern_regex": "FreeCADInternalError:\\ FreeCAD\\ internal\\ error:\\ 'Part\\.Solid'\\ object\\ has\\ no\\ attribute\\ 'isSolid'\\ \\|\\ Fix:\\ ",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-21T21:32:10.891477",
+      "root_cause": "FreeCADInternalError: FreeCAD internal error: 'Part.Solid' object has no attribute 'isSolid' | Fix: The FreeCAD geometry kernel raised an internal exception. Simplify the geometry operation that faile",
+      "solution": "Fix: FreeCADInternalError: FreeCAD internal error: 'Part.Solid' object has no attribute 'isSolid' | Fix: The FreeCAD geometry kernel raised an internal exc",
+      "prevention_prompt": "AVOID this error: FreeCADInternalError: FreeCAD internal error: 'Part.Solid' object has no attribute 'isSolid' | Fix: The FreeCAD geometry kernel raised an internal exc",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_019",
+      "pattern_regex": "FreeCADInternalError:\\ FreeCAD\\ internal\\ error:\\ Volume\\ mismatch\\ \\|\\ Fix:\\ The\\ FreeCAD\\ geometry\\ kernel\\ rai",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-21T21:34:04.885415",
+      "root_cause": "FreeCADInternalError: FreeCAD internal error: Volume mismatch | Fix: The FreeCAD geometry kernel raised an internal exception. Simplify the geometry operation that failed. Try using basic Part primiti",
+      "solution": "Fix: FreeCADInternalError: FreeCAD internal error: Volume mismatch | Fix: The FreeCAD geometry kernel raised an internal exception. Simplify the geometry o",
+      "prevention_prompt": "AVOID this error: FreeCADInternalError: FreeCAD internal error: Volume mismatch | Fix: The FreeCAD geometry kernel raised an internal exception. Simplify the geometry o",
+      "verified": false,
+      "category": "architectural"
+    },
+    {
+      "id": "err_020",
+      "pattern_regex": "FreeCADInternalError:\\ FreeCAD\\ internal\\ error:\\ 'Part\\.BRepOffsetAPI_MakePipeShell'\\ object\\ has\\ no\\ attri",
+      "error_type": "runtime_error",
+      "frequency": 1,
+      "last_seen": "2026-07-21T23:11:59.612988",
+      "root_cause": "FreeCADInternalError: FreeCAD internal error: 'Part.BRepOffsetAPI_MakePipeShell' object has no attribute 'isDone' | Fix: The FreeCAD geometry kernel raised an internal exception. Simplify the geometry",
+      "solution": "Fix: FreeCADInternalError: FreeCAD internal error: 'Part.BRepOffsetAPI_MakePipeShell' object has no attribute 'isDone' | Fix: The FreeCAD geometry kernel r",
+      "prevention_prompt": "AVOID this error: FreeCADInternalError: FreeCAD internal error: 'Part.BRepOffsetAPI_MakePipeShell' object has no attribute 'isDone' | Fix: The FreeCAD geometry kernel r",
+      "verified": false,
+      "category": "architectural"
+    }
+  ],
+  "success_patterns": [
+    {
+      "prompt_snippet": "Previous User Request: high-fidelity 3D CAD model of a modern symmetrical twin-tower academic buildi",
+      "api_patterns": [
+        "Part.Compound",
+        ".cut(",
+        "doc.addObject",
+        ".translate(",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "architectural",
+      "line_count": 567,
+      "timestamp": "2026-02-19T23:03:13.578677"
+    },
+    {
+      "prompt_snippet": "Previous User Request: high-fidelity 3D CAD model of a modern symmetrical twin-tower academic buildi",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 617,
+      "timestamp": "2026-02-19T23:30:25.028342"
+    },
+    {
+      "prompt_snippet": "Previous User Request: To design a structural arc bridge that mirrors the modernist, institutional a",
+      "api_patterns": [
+        ".fuse(",
+        "Part.Face",
+        "Part.Compound",
+        "Part.BSplineCurve",
+        ".cut(",
+        "doc.addObject",
+        ".translate(",
+        "Part.Wire",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "civil",
+      "line_count": 445,
+      "timestamp": "2026-02-20T00:41:17.618538"
+    },
+    {
+      "prompt_snippet": "Previous User Request: deisgn a hostel complex , 4 buildingeach with 4 floors , proper hostel rooms ",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".fuse(",
+        ".translate(",
+        "Part.makeBox",
+        "Part.Compound"
+      ],
+      "category": "architectural",
+      "line_count": 780,
+      "timestamp": "2026-02-20T18:39:06.354877"
+    },
+    {
+      "prompt_snippet": "Previous User Request: deisgn a hostel complex , 4 buildingeach with 4 floors , proper hostel rooms ",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.Compound",
+        "Part.makeCylinder",
+        ".cut(",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 953,
+      "timestamp": "2026-02-20T22:40:56.129346"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple turbine with 3 long blades\n\nCurrent Request: design a simple ",
+      "api_patterns": [
+        "Part.makePolygon",
+        ".fuse(",
+        "Part.Compound",
+        "doc.addObject",
+        ".translate(",
+        ".cut(",
+        "Part.makeCylinder",
+        "Part.Face",
+        "Part.makeBox"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 328,
+      "timestamp": "2026-02-21T01:13:40.149371"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a hostel complex with 4 buildings and each building having 4 floors , ",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeBox",
+        ".cut(",
+        ".translate(",
+        ".fuse(",
+        "Part.Compound"
+      ],
+      "category": "architectural",
+      "line_count": 530,
+      "timestamp": "2026-02-21T06:33:36.244556"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a 3 blade curved turbine for water motor\n\nCurrent Request: design a 3 ",
+      "api_patterns": [
+        ".translate(",
+        "Part.Compound",
+        "Part.makePolygon",
+        "Part.Face",
+        ".fuse(",
+        ".cut(",
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "doc.addObject"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 532,
+      "timestamp": "2026-02-21T15:23:14.387038"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a modern office building with 4 floors\n\nCurrent Request: Design a mode",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.Compound"
+      ],
+      "category": "architectural",
+      "line_count": 538,
+      "timestamp": "2026-02-22T01:34:12.818654"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a 8 blade turbine\n\nCurrent Request: design a 8 blade turbine",
+      "api_patterns": [
+        "Part.makeCylinder",
+        ".translate(",
+        "doc.addObject",
+        ".cut(",
+        "Part.Compound",
+        "Part.makeBox",
+        "Part.Wire",
+        ".fuse(",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 409,
+      "timestamp": "2026-02-22T02:23:51.122966"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a 8 blade turbine\nPrevious Generation: Success (Score: 0.82, Iteration",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.Face",
+        ".translate(",
+        "doc.addObject",
+        ".cut(",
+        "Part.Compound",
+        ".fuse(",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 294,
+      "timestamp": "2026-02-22T02:44:14.245130"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a modern office building with 4 floors\n\nCurrent Request: Design a mode",
+      "api_patterns": [
+        "Part.makeCylinder",
+        ".translate(",
+        "doc.addObject",
+        "Part.Compound",
+        "Part.makeBox",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 491,
+      "timestamp": "2026-02-23T03:27:19.262058"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a modern office building with 4 floors\n\nCurrent Request: Design a mode",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.Compound"
+      ],
+      "category": "architectural",
+      "line_count": 501,
+      "timestamp": "2026-02-24T09:56:14.726060"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a office building with 6 floors, a proper facade and lawn area.\n\nCurre",
+      "api_patterns": [
+        "Part.makeCylinder",
+        ".translate(",
+        "Part.makeBox",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 418,
+      "timestamp": "2026-02-24T10:29:04.304398"
+    },
+    {
+      "prompt_snippet": "Previous User Request: A 3D CAD model of a three-blade horizontal axis wind turbine. The turbine fea",
+      "api_patterns": [
+        "Part.makeCylinder",
+        ".translate(",
+        "Part.makeBox",
+        "doc.addObject"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 418,
+      "timestamp": "2026-02-24T10:38:18.158883"
+    },
+    {
+      "prompt_snippet": "Previous User Request: A 3D CAD model of a three-blade horizontal axis wind turbine. The turbine fea",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.Face",
+        ".translate(",
+        "doc.addObject",
+        ".cut(",
+        "Part.Compound",
+        "Part.makeBox",
+        "Part.Wire",
+        ".fuse(",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 357,
+      "timestamp": "2026-02-24T11:41:44.104687"
+    },
+    {
+      "prompt_snippet": "Previous User Request: A 3D CAD model of a three-blade horizontal axis wind turbine. The turbine fea",
+      "api_patterns": [
+        ".translate(",
+        "Part.makeCylinder",
+        "doc.addObject",
+        "Part.Compound",
+        ".cut(",
+        "Part.makeBox",
+        "Part.makePolygon",
+        "Part.makeCone"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 248,
+      "timestamp": "2026-02-24T11:50:51.268679"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a simple 3 balde turbine\n\nCurrent Request: design me a simple 3 bal",
+      "api_patterns": [
+        ".translate(",
+        "Part.makeCylinder",
+        "doc.addObject",
+        "Part.Compound",
+        ".cut(",
+        "Part.Face",
+        "Part.makeBox",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 327,
+      "timestamp": "2026-02-24T12:01:17.595861"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a modern office building with 4 floors\n\nCurrent Request: Design a mode",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "architectural",
+      "line_count": 589,
+      "timestamp": "2026-02-24T12:10:26.416310"
+    },
+    {
+      "prompt_snippet": "Previous User Request: A 3D CAD model of a three-blade horizontal axis wind turbine. The turbine fea",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "civil",
+      "line_count": 466,
+      "timestamp": "2026-02-24T12:55:13.731632"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design  a 3 blade turbine for wind mil\n\nCurrent Request: design  a 3 blade tu",
+      "api_patterns": [
+        ".translate(",
+        "Part.makeCylinder",
+        ".fuse(",
+        "doc.addObject",
+        "Part.Compound",
+        "Part.makeSphere",
+        ".cut(",
+        "Part.Face",
+        "Part.makeBox",
+        "Part.makePolygon",
+        "Part.makeCone"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 512,
+      "timestamp": "2026-02-24T13:44:36.942908"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a modern office building with 4 floors\n\nCurrent Request: Design a mode",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.Compound",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "architectural",
+      "line_count": 439,
+      "timestamp": "2026-02-24T15:25:26.169559"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a modern office building with 3 floors , modern facade and proper stru",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.Compound",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 480,
+      "timestamp": "2026-02-25T13:19:07.383054"
+    },
+    {
+      "prompt_snippet": "Previous Generation: Success (Score: 0.85, Iterations: 5)\nPrevious Validation: Valid: 2/2\nPrevious U",
+      "api_patterns": [
+        ".translate(",
+        "Part.makeCylinder",
+        ".fuse(",
+        "doc.addObject",
+        "Part.Compound",
+        ".cut(",
+        "Part.Face",
+        "Part.makeBox",
+        "Part.makePolygon",
+        "Part.Wire",
+        "Part.makeCone"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 650,
+      "timestamp": "2026-02-25T14:12:18.299476"
+    },
+    {
+      "prompt_snippet": "Previous Generation: Success (Score: 0.82, Iterations: 5)\nPrevious Validation: Valid: 2/2\nPrevious U",
+      "api_patterns": [
+        ".translate(",
+        "Part.makeCylinder",
+        ".fuse(",
+        "doc.addObject",
+        "Part.Compound",
+        ".cut(",
+        "Part.Face",
+        "Part.makeBox",
+        "Part.makePolygon",
+        "Part.Wire"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 442,
+      "timestamp": "2026-02-25T14:58:57.851308"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a modern office building with 4 floors\n\nCurrent Request: Design a mode",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "architectural",
+      "line_count": 623,
+      "timestamp": "2026-02-27T07:42:19.166768"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create an L-shaped bracket with mounting holes\n\nCurrent Request: Create an L-",
+      "api_patterns": [
+        "Part.Compound",
+        ".fuse(",
+        ".translate(",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        ".cut(",
+        "doc.addObject"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 94,
+      "timestamp": "2026-02-27T08:01:02.697215"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create an L-shaped bracket with mounting holes\nPrevious Generation: Success (",
+      "api_patterns": [
+        "Part.Compound",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        ".cut(",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 881,
+      "timestamp": "2026-02-27T08:26:20.123785"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a 3 blade turbine\n\nCurrent Request: design me a 3 blade turbine",
+      "api_patterns": [
+        "Part.makeBox",
+        "Part.makeSphere",
+        "Part.Compound",
+        "Part.makeCylinder",
+        "doc.addObject",
+        ".translate(",
+        "Part.Face",
+        "Part.makePolygon",
+        ".fuse(",
+        ".cut("
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 347,
+      "timestamp": "2026-02-28T16:18:01.301653"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a gear with 24 teeth and module 2\n\nCurrent Request: Design a gear with",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makeBox",
+        "Part.Compound",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".cut(",
+        "Part.Face",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 267,
+      "timestamp": "2026-03-03T01:19:14.047437"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a gear with 24 teeth and module 2\nPrevious Generation: Success (Score:",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makeBox",
+        "Part.Compound",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".cut(",
+        "Part.Face",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 228,
+      "timestamp": "2026-03-03T01:28:54.400762"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a gear with 24 teeth and module 2\n\nCurrent Request: Design a gear with",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makeBox",
+        "Part.Compound",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".cut(",
+        "Part.Face",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 322,
+      "timestamp": "2026-03-03T02:54:34.399034"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".cut(",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 258,
+      "timestamp": "2026-03-03T03:52:17.600485"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\nPrevious Generation: Success (Score: 0.85",
+      "api_patterns": [
+        "Part.makeBox",
+        "Part.Compound",
+        "doc.addObject",
+        "Part.makeCylinder",
+        "Part.makeTorus",
+        ".cut(",
+        ".translate(",
+        "Part.Face",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 268,
+      "timestamp": "2026-03-03T03:58:20.364116"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple 2 bkh house with garden\n\nCurrent Request: design a simple 2 b",
+      "api_patterns": [
+        "Part.makeBox",
+        "Part.Compound",
+        "doc.addObject",
+        ".cut(",
+        ".translate(",
+        "Part.Face",
+        "Part.makePolygon"
+      ],
+      "category": "architectural",
+      "line_count": 278,
+      "timestamp": "2026-03-03T04:37:23.026589"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple 2 bkh house with garden\nPrevious Generation: Success (Score: ",
+      "api_patterns": [
+        "Part.makeBox",
+        "Part.Compound",
+        "doc.addObject",
+        ".cut(",
+        "Part.Face",
+        "Part.makePolygon"
+      ],
+      "category": "architectural",
+      "line_count": 827,
+      "timestamp": "2026-03-03T04:44:45.599789"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a motor engine\n\nCurrent Request: design me a motor engine",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makeBox",
+        "Part.Compound",
+        "doc.addObject",
+        "Part.makeCylinder",
+        "Part.makeTorus",
+        ".cut("
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 1019,
+      "timestamp": "2026-03-03T04:55:44.486254"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a simple VTOL aircraft turbine\n\nCurrent Request: design me a simple",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "Part.makePolygon",
+        "Part.Compound",
+        ".translate(",
+        "Part.makeCone",
+        ".cut(",
+        "Part.Face"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 610,
+      "timestamp": "2026-03-04T02:05:45.572361"
+    },
+    {
+      "prompt_snippet": "Previous User Request: A high-resolution, engineering-grade 3D CAD model of a massive, coastal archi",
+      "api_patterns": [
+        ".cut(",
+        "Part.makePolygon",
+        ".translate(",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeTorus",
+        "Part.makeCylinder",
+        "Part.Face"
+      ],
+      "category": "architectural",
+      "line_count": 927,
+      "timestamp": "2026-03-04T03:16:51.937868"
+    },
+    {
+      "prompt_snippet": "Previous User Request: A high-resolution, engineering-grade 3D CAD model of a massive, coastal archi",
+      "api_patterns": [
+        "Part.makeTorus",
+        "Part.makeSphere",
+        "Part.Compound",
+        ".translate(",
+        "doc.addObject",
+        "Part.makeBox",
+        ".fuse(",
+        "Part.makeCylinder",
+        "Part.makePolygon"
+      ],
+      "category": "architectural",
+      "line_count": 785,
+      "timestamp": "2026-03-04T04:34:32.204835"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        ".cut(",
+        "Part.Compound",
+        ".translate(",
+        "doc.addObject",
+        "Part.makeBox",
+        ".fuse(",
+        "Part.makeCylinder",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 385,
+      "timestamp": "2026-03-04T17:05:56.775603"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a simple bridge\n\nCurrent Request: design me a simple bridge",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.Compound",
+        "doc.addObject",
+        "Part.makeBox"
+      ],
+      "category": "civil",
+      "line_count": 376,
+      "timestamp": "2026-03-05T04:46:35.534525"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create an L-shaped bracket with mounting holes\n\nCurrent Request: Create an L-",
+      "api_patterns": [
+        ".translate(",
+        ".cut(",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".fuse(",
+        "Part.Compound"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 117,
+      "timestamp": "2026-03-05T05:35:07.628247"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a gear with 24 teeth and module 2\nPrevious Generation: Failed - All 5 ",
+      "api_patterns": [
+        ".translate(",
+        ".cut(",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".fuse(",
+        "Part.Compound"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 66,
+      "timestamp": "2026-03-05T05:36:50.246536"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple bridge\n\nCurrent Request: design a simple bridge",
+      "api_patterns": [
+        ".translate(",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.makeCylinder",
+        "Part.Compound"
+      ],
+      "category": "civil",
+      "line_count": 571,
+      "timestamp": "2026-03-05T06:00:57.059646"
+    },
+    {
+      "prompt_snippet": "Previous User Request: a simple cube\n\nCurrent Request: a simple cube",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        ".translate(",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 92,
+      "timestamp": "2026-03-05T06:37:29.584780"
+    },
+    {
+      "prompt_snippet": "Previous User Request: a simple 10x10x10 box\n\nCurrent Request: a simple 10x10x10 box",
+      "api_patterns": [
+        "Part.makeBox",
+        "doc.addObject",
+        ".translate("
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 145,
+      "timestamp": "2026-03-05T06:48:18.682647"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple cube\n\nCurrent Request: design a simple cube",
+      "api_patterns": [
+        "Part.makeBox",
+        "doc.addObject"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 102,
+      "timestamp": "2026-03-05T07:02:24.715938"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple T shape\n\nCurrent Request: design a simple T shape",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Compound"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 108,
+      "timestamp": "2026-03-05T16:01:54.389889"
+    },
+    {
+      "prompt_snippet": "Previous User Request: create a simple 10x10x10 cube\n\nCurrent Request: create a simple 10x10x10 cube",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeBox"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 90,
+      "timestamp": "2026-03-05T16:53:59.433808"
+    },
+    {
+      "prompt_snippet": "Previous User Request: a thin cylinder 50mm high and 10mm diameter\n\nCurrent Request: a thin cylinder",
+      "api_patterns": [
+        "doc.addObject",
+        ".cut(",
+        "Part.makeCylinder"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 80,
+      "timestamp": "2026-03-05T16:59:58.160665"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        "Part.makePolygon",
+        ".translate(",
+        ".fuse(",
+        "Part.makeCylinder",
+        ".cut(",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.Face",
+        "Part.Compound"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 349,
+      "timestamp": "2026-03-05T19:47:34.508767"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        ".fuse(",
+        ".translate(",
+        "Part.makeCylinder",
+        "Part.makePolygon",
+        "Part.Compound",
+        "Part.makeBox",
+        ".cut(",
+        "doc.addObject",
+        "Part.Face"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 258,
+      "timestamp": "2026-03-05T21:12:28.780216"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\nPrevious Generation: Success (Score: 0.83",
+      "api_patterns": [
+        ".fuse(",
+        ".translate(",
+        "Part.makeCylinder",
+        "Part.makePolygon",
+        "Part.makeBox",
+        ".cut(",
+        "doc.addObject",
+        "Part.Face"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 476,
+      "timestamp": "2026-03-05T21:23:51.238513"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me modern chair\n\nCurrent Request: design me modern chair",
+      "api_patterns": [
+        "Part.makeCone",
+        "Part.Compound",
+        "Part.makeSphere",
+        ".fuse(",
+        ".translate(",
+        "Part.makeBox",
+        "doc.addObject",
+        "Part.makeCylinder"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 399,
+      "timestamp": "2026-03-05T22:17:04.653906"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a cycle basis structure\n\nCurrent Request: design me a cycle basis s",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.Compound",
+        "Part.makeCylinder",
+        "Part.makeBox"
+      ],
+      "category": "civil",
+      "line_count": 622,
+      "timestamp": "2026-03-05T22:27:22.572753"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        "Part.Face",
+        ".fuse(",
+        ".translate(",
+        "Part.makePolygon",
+        "Part.Compound"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 386,
+      "timestamp": "2026-03-05T22:49:56.803538"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a VTOL  aircraft\nPrevious Generation: Failed - All 5 iterations fai",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        "Part.Compound"
+      ],
+      "category": "architectural",
+      "line_count": 640,
+      "timestamp": "2026-03-06T00:04:59.635245"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\nPrevious Generation: Success (Score: 0.82",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Wire",
+        "Part.makeCylinder",
+        ".fuse(",
+        ".translate(",
+        "Part.makePolygon",
+        "Part.Compound"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 308,
+      "timestamp": "2026-03-06T00:22:02.661035"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a VTOL aircraft engine, with proper blades and  working\nPrevious Gener",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        "Part.makeCone",
+        ".fuse(",
+        ".translate(",
+        "Part.makePolygon"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 634,
+      "timestamp": "2026-03-06T00:54:37.569415"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a VTOL aircraft engine, with proper blades and  working\nPrevious Gener",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        "Part.Face",
+        ".fuse(",
+        ".translate(",
+        "Part.makePolygon",
+        "Part.Compound"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 341,
+      "timestamp": "2026-03-06T01:06:38.113225"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a RCC wall\n\nCurrent Request: design me a RCC wall",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder"
+      ],
+      "category": "structural",
+      "line_count": 95,
+      "timestamp": "2026-03-06T05:40:20.174017"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a 10 blade turbine\n\nCurrent Request: design me a 10 blade turbine",
+      "api_patterns": [
+        "Part.makePolygon",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        ".fuse(",
+        ".translate(",
+        "Part.Face",
+        ".cut("
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 311,
+      "timestamp": "2026-03-06T06:02:42.237999"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        "Part.Face",
+        ".cut(",
+        "Part.makeCylinder",
+        ".fuse(",
+        "doc.addObject",
+        "Part.makePolygon",
+        "Part.makeBox"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 458,
+      "timestamp": "2026-03-10T15:58:29.082554"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a 4 floor building, with modern facade.\n\nCurrent Request: design a 4 f",
+      "api_patterns": [
+        "Part.makeBox",
+        ".cut(",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 537,
+      "timestamp": "2026-03-10T16:18:55.171812"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a 3 blade turbine rotor for engine.\n\nCurrent Request: design me a 3",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makePolygon",
+        ".translate(",
+        "doc.addObject",
+        "Part.makeBox",
+        ".cut(",
+        "Part.makeCylinder"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 336,
+      "timestamp": "2026-03-10T16:26:07.239121"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design me a VOTL aircraft turbine design\n\nCurrent Request: design me a VOTL a",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makePolygon",
+        ".translate(",
+        "doc.addObject",
+        "Part.makeBox",
+        ".cut(",
+        "Part.makeCone",
+        "Part.makeCylinder"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 893,
+      "timestamp": "2026-03-10T16:37:57.080838"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple 3 blade turbine\n\nCurrent Request: design a simple 3 blade tur",
+      "api_patterns": [
+        ".fuse(",
+        ".translate(",
+        "Part.makeBox",
+        "Part.makePolygon",
+        "Part.makeCylinder",
+        ".cut(",
+        "doc.addObject"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 171,
+      "timestamp": "2026-04-09T15:04:00.414237"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a parametric 4-stroke, DOHC, liquid-cooled single-cylinder internal co",
+      "api_patterns": [
+        ".cut(",
+        "Part.Compound",
+        "Part.makeCone",
+        "doc.addObject",
+        "Part.makeTorus",
+        "Part.makeBox",
+        "Part.makeCylinder",
+        "Part.makeSphere"
+      ],
+      "category": "mechanical_engineering",
+      "line_count": 463,
+      "timestamp": "2026-04-12T06:41:55.781406"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a gear with 24 teeth and module 2\n\nCurrent Request: Design a gear with",
+      "api_patterns": [
+        "Part.makeBox",
+        "Part.Face",
+        ".cut(",
+        "Part.Wire",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 602,
+      "timestamp": "2026-07-11T06:18:16.553445"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makeSphere",
+        "Part.makePolygon",
+        "Part.makeTorus",
+        "Part.makeBox",
+        "Part.Face",
+        ".cut(",
+        "Part.makeCylinder",
+        ".translate(",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 643,
+      "timestamp": "2026-07-11T06:27:23.853162"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.Face",
+        "Part.makeBox",
+        ".translate(",
+        ".cut(",
+        "Part.makePolygon",
+        "Part.makeSphere",
+        "doc.addObject",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 539,
+      "timestamp": "2026-07-12T17:11:30.963355"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple coffee mug\n\nCurrent Request: design a simple coffee mug",
+      "api_patterns": [
+        "Part.makeTorus",
+        "Part.makeBox",
+        ".translate(",
+        ".cut(",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 159,
+      "timestamp": "2026-07-12T17:58:20.994656"
+    },
+    {
+      "prompt_snippet": "Previous User Request: design a simple coffee mug\nPrevious Generation: Success (Score: 0.89999999999",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.Wire",
+        "Part.makeBox",
+        "Part.makeTorus",
+        ".translate(",
+        ".cut(",
+        "doc.addObject",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 206,
+      "timestamp": "2026-07-12T18:04:59.214189"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a cantilever bridge spanning 50 meters\n\nCurrent Request: Design a cant",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "doc.addObject",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 294,
+      "timestamp": "2026-07-12T18:19:16.473150"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a parametric aluminum heat sink. The base should be a rectangular bloc",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "Part.Compound",
+        ".cut(",
+        "doc.addObject",
+        "Part.makeCone",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 203,
+      "timestamp": "2026-07-12T18:32:11.568315"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a spiral staircase. The central support column should be a vertical cy",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "Part.Compound",
+        ".translate(",
+        "Part.makeSphere",
+        "doc.addObject",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 202,
+      "timestamp": "2026-07-12T18:47:04.586819"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Model a pipe adapter with flanges on both ends. The main body should be a hol",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "Part.makeTorus",
+        ".translate(",
+        ".cut(",
+        "doc.addObject",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 322,
+      "timestamp": "2026-07-12T19:05:48.959294"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a 3-blade wind turbine rotor\n\nCurrent Request: Create a 3-blade wind t",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeBox",
+        "Part.Compound",
+        ".translate(",
+        ".cut(",
+        "Part.makePolygon",
+        "doc.addObject",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 300,
+      "timestamp": "2026-07-12T19:16:28.156716"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a structural steel roof truss. The bottom chord should be a horizontal",
+      "api_patterns": [
+        "doc.addObject",
+        ".translate(",
+        ".fuse(",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 69,
+      "timestamp": "2026-07-12T19:22:08.231845"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Model a 4-slot Geneva mechanism drive wheel. Start with a solid disk of radiu",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.Face",
+        "Part.makeBox",
+        "Part.Compound",
+        ".translate(",
+        ".cut(",
+        ".fuse(",
+        "doc.addObject",
+        "Part.Wire"
+      ],
+      "category": "architectural",
+      "line_count": 238,
+      "timestamp": "2026-07-12T19:36:58.129382"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a pipe flange adapter. Create a hollow cylindrical pipe body with an o",
+      "api_patterns": [
+        ".fuse(",
+        "Part.makeCylinder",
+        ".cut(",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 226,
+      "timestamp": "2026-07-19T01:44:08.967590"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Model a motor mounting bracket. Start with a flat rectangular base plate 200m",
+      "api_patterns": [
+        "Part.makeCylinder",
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 271,
+      "timestamp": "2026-07-19T01:55:25.654342"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Model a motor mounting bracket. Start with a flat rectangular base plate 200m",
+      "api_patterns": [
+        ".fuse(",
+        "doc.addObject",
+        ".cut(",
+        "Part.makeCylinder",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 262,
+      "timestamp": "2026-07-19T02:02:07.348934"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a simple A-frame roof truss section for a 6000mm wide building. The bo",
+      "api_patterns": [
+        ".fuse(",
+        ".translate(",
+        "Part.Face",
+        "doc.addObject",
+        "Part.makePolygon",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 279,
+      "timestamp": "2026-07-19T02:33:50.543433"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Model the front facade wall of a small building. The wall is a solid rectangu",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 245,
+      "timestamp": "2026-07-19T02:46:50.458562"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a 12-tooth external spur gear blank (no involute profile needed — use ",
+      "api_patterns": [
+        ".fuse(",
+        "doc.addObject",
+        ".cut(",
+        "Part.makeCylinder",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 59,
+      "timestamp": "2026-07-19T03:00:40.967291"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a spiral staircase. The central support column should be a vertical cy",
+      "api_patterns": [
+        "Part.makeSphere",
+        ".fuse(",
+        ".translate(",
+        "doc.addObject",
+        "Part.Compound",
+        ".cut(",
+        "Part.makeCylinder",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 238,
+      "timestamp": "2026-07-19T16:07:01.535308"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a pipe flange adapter. Create a hollow cylindrical pipe body with an\no",
+      "api_patterns": [
+        ".fuse(",
+        "Part.Wire",
+        "doc.addObject",
+        ".cut(",
+        "Part.makeCylinder",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 341,
+      "timestamp": "2026-07-19T17:11:42.182317"
+    },
+    {
+      "prompt_snippet": "Previous User Request: The 12 sequential boolean operations caused the 20mm circular bore to degrade",
+      "api_patterns": [
+        ".cut(",
+        "doc.addObject",
+        "Part.makeCylinder",
+        ".fuse(",
+        "Part.Compound",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 187,
+      "timestamp": "2026-07-21T06:32:46.084014"
+    },
+    {
+      "prompt_snippet": "Previous User Request: The 12 sequential boolean operations caused the 20mm circular bore to degrade",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Compound",
+        ".fuse(",
+        ".cut("
+      ],
+      "category": "architectural",
+      "line_count": 160,
+      "timestamp": "2026-07-21T19:35:51.476088"
+    },
+    {
+      "prompt_snippet": "Previous User Request: The model didn't know how to use makePipeShell or makeHelix, so it created 15",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeSphere",
+        "doc.addObject",
+        "Part.Face",
+        "Part.Compound",
+        "Part.makePolygon",
+        ".translate(",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 216,
+      "timestamp": "2026-07-21T20:04:24.481267"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a parametric aluminum extrusion heat sink profile. The base is a recta",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeCone",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Compound",
+        ".fuse(",
+        ".cut("
+      ],
+      "category": "architectural",
+      "line_count": 82,
+      "timestamp": "2026-07-21T20:18:30.257693"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a 150mm x 150mm x 10mm flat aluminum mounting plate. Cut a 10x10 grid ",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Compound",
+        ".cut("
+      ],
+      "category": "architectural",
+      "line_count": 220,
+      "timestamp": "2026-07-21T21:14:27.041139"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a 150mm x 150mm x 10mm flat aluminum mounting plate. Cut a 10x10 grid ",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Compound",
+        ".cut("
+      ],
+      "category": "architectural",
+      "line_count": 262,
+      "timestamp": "2026-07-21T21:29:00.405622"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Create a simple 100mm x 100mm x 100mm solid cube. Nothing else.\n\nCurrent Requ",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.makeBox"
+      ],
+      "category": "architectural",
+      "line_count": 54,
+      "timestamp": "2026-07-21T21:35:06.754140"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a heavy-duty mechanical compression spring. The spring wire has a circ",
+      "api_patterns": [
+        "doc.addObject",
+        "Part.Wire"
+      ],
+      "category": "architectural",
+      "line_count": 212,
+      "timestamp": "2026-07-21T23:14:59.197317"
+    },
+    {
+      "prompt_snippet": "Previous User Request: Design a cantilever bridge spanning 50 meters\n\nCurrent Request: Design a cant",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.Compound",
+        "doc.addObject"
+      ],
+      "category": "architectural",
+      "line_count": 233,
+      "timestamp": "2026-07-21T23:34:42.798669"
+    },
+    {
+      "prompt_snippet": "Previous User Request: An ultra-tall futuristic megaskyscraper rising over 1,000 meters into the clo",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeCone",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Compound",
+        ".translate(",
+        ".fuse("
+      ],
+      "category": "architectural",
+      "line_count": 260,
+      "timestamp": "2026-07-21T23:48:46.809806"
+    },
+    {
+      "prompt_snippet": "Previous User Request: **Prompt**\n\nA next-generation ultra-high-efficiency commercial turbofan aircr",
+      "api_patterns": [
+        "Part.makeCylinder",
+        "Part.makeCone",
+        "doc.addObject",
+        "Part.makeBox",
+        "Part.Face",
+        "Part.Compound",
+        "Part.makePolygon",
+        ".translate(",
+        ".fuse(",
+        ".cut("
+      ],
+      "category": "architectural",
+      "line_count": 390,
+      "timestamp": "2026-07-22T00:10:47.130648"
+    }
+  ],
+  "last_updated": "2026-07-22T00:10:47.130648"
+}

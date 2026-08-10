@@ -1,0 +1,10 @@
+[
+  {
+    "username": "your_username",
+    "password": "your_secure_password",
+    "token": "token_your_username_XXXX",
+    "limit": 50,
+    "email": "you@example.com",
+    "company": "Your Company"
+  }
+]

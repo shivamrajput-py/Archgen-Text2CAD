@@ -1,0 +1,77 @@
+# ==================== DEVELOPMENT-ONLY FOLDERS (never push) ====================
+# These are local dev tools, experiments, and the full FreeCAD source.
+# They are NOT part of the publishable codebase.
+FreeCAD-main/
+LangchainLearning/
+langgraph_archgen_core/
+ArchgenWorkbench/
+.venv/
+install_workbench.bat
+C4_-_Pitch_Deck_Template_-_PT_Final_task_deck.pptx
+
+# ==================== SECRETS & CREDENTIALS ====================
+
+# NEVER commit these — they contain real API keys and passwords
+core/.env
+core/.env.local
+core/clients.json
+
+# ==================== DATABASES & RUNTIME DATA ====================
+core/archgen_db.sqlite
+core/archgen_db.sqlite-wal
+core/archgen_db.sqlite-shm
+
+# ==================== USER-GENERATED CONTENT ====================
+# These are generated at runtime and can be large
+core/generated_models/
+core/pending_review/
+core/generation_archive/
+core/feedback/
+
+# ==================== LARGE TEST ARTIFACTS ====================
+core/main.py.bak
+core/*.bak
+core/test_drawing*.svg
+core/test_drawing3.svg
+
+# ==================== PYTHON ====================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv/
+venv/
+env/
+
+# ==================== FRONTEND ====================
+web/node_modules/
+web/dist/
+web/.env.local
+web/app/node_modules/
+web/app/dist/
+web/app/.env.local
+web/app/ts_er.txt
+web/app/ts_errors.txt
+
+# ==================== EDITORS & OS ====================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*.tmp

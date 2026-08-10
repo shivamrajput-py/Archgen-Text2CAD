@@ -1,0 +1,48 @@
+[
+  {
+    "_note": "This is a sample dataset showing the schema. The full dataset.json is gitignored (it is your training IP). To populate Pinecone, run: python migrate_to_pinecone.py",
+    "prompt": "Design a simple cylindrical shaft with a diameter of 25mm and a length of 150mm. Include a central through-hole of 8mm diameter.",
+    "script": "import FreeCAD as App\nimport Part\n\n# Shaft parameters\nshaft_diameter = 25.0\nshaft_length = 150.0\nbore_diameter = 8.0\n\ndoc = App.newDocument('CylindricalShaft')\n\n# Create outer shaft cylinder\nshaft = Part.makeCylinder(shaft_diameter / 2, shaft_length)\n\n# Create central bore\nbore = Part.makeCylinder(bore_diameter / 2, shaft_length)\n\n# Boolean subtraction\nfinal_shape = shaft.cut(bore)\n\n# Add to document\npart = doc.addObject('Part::Feature', 'Shaft')\npart.Shape = final_shape\n\ndoc.recompute()\ndoc.save('shaft.FCStd')\nprint('EXPORT_SUCCESS')",
+    "category": "Mechanical",
+    "difficulty": "simple",
+    "components": ["cylinder", "bore"],
+    "tags": ["shaft", "cylindrical", "bore", "mechanical"],
+    "freecad_apis": ["Part.makeCylinder", "shape.cut", "doc.addObject"],
+    "engineering_concepts": ["boolean subtraction", "shaft design"],
+    "score": 0.92,
+    "validation_criteria": {
+      "geometry": "Single solid body, no open shells",
+      "dimensions": "Outer diameter 25mm, length 150mm, bore 8mm"
+    }
+  },
+  {
+    "prompt": "Create a rectangular mounting bracket with overall dimensions 80mm x 50mm x 10mm. Add four M5 bolt holes (5.5mm diameter) at the corners, positioned 8mm from each edge.",
+    "script": "import FreeCAD as App\nimport Part\n\n# Bracket parameters\nlength = 80.0\nwidth = 50.0\nthickness = 10.0\nbolt_hole_dia = 5.5\nbolt_offset = 8.0\n\ndoc = App.newDocument('MountingBracket')\n\n# Create base plate\nplate = Part.makeBox(length, width, thickness)\n\n# Create bolt holes at corners\nbolt_positions = [\n    (bolt_offset, bolt_offset),\n    (length - bolt_offset, bolt_offset),\n    (bolt_offset, width - bolt_offset),\n    (length - bolt_offset, width - bolt_offset)\n]\n\nhole_tools = []\nfor (x, y) in bolt_positions:\n    hole = Part.makeCylinder(bolt_hole_dia / 2, thickness,\n                             App.Vector(x, y, 0), App.Vector(0, 0, 1))\n    hole_tools.append(hole)\n\n# Batch boolean cut (all holes in one operation)\nfinal_shape = plate.cut(Part.Compound(hole_tools))\n\npart = doc.addObject('Part::Feature', 'Bracket')\npart.Shape = final_shape\n\ndoc.recompute()\ndoc.save('bracket.FCStd')\nprint('EXPORT_SUCCESS')",
+    "category": "Mechanical",
+    "difficulty": "simple",
+    "components": ["base_plate", "bolt_holes"],
+    "tags": ["bracket", "mounting", "plate", "bolt holes"],
+    "freecad_apis": ["Part.makeBox", "Part.makeCylinder", "shape.cut", "Part.Compound"],
+    "engineering_concepts": ["batch boolean operations", "bolt pattern", "plate design"],
+    "score": 0.89,
+    "validation_criteria": {
+      "geometry": "Single solid body, 4 through-holes",
+      "dimensions": "80x50x10mm plate, 5.5mm holes at 8mm from edges"
+    }
+  },
+  {
+    "prompt": "Design a helical compression spring with 2mm wire diameter, 15mm coil radius, 80mm free height, and 12mm pitch.",
+    "script": "import FreeCAD as App\nimport Part\nimport math\n\n# Spring parameters\nwire_radius = 1.0\ncoil_radius = 15.0\nfree_height = 80.0\npitch = 12.0\n\ndoc = App.newDocument('CompressionSpring')\n\n# Calculate number of coils\nn_coils = free_height / pitch\n\n# Create helix path\nhelix = Part.makeHelix(pitch, free_height, coil_radius, 0, False)\n\n# Create wire cross-section circle\npath_start = helix.Vertexes[0].Point\npath_tangent = helix.tangentAt(helix.FirstParameter)\ncircle = Part.makeCircle(wire_radius, path_start, path_tangent)\nwire_section = Part.Wire(circle)\n\n# Sweep wire along helix to create spring\nspring_shape = helix.makePipe(wire_section)\n\npart = doc.addObject('Part::Feature', 'Spring')\npart.Shape = spring_shape\n\ndoc.recompute()\ndoc.save('spring.FCStd')\nprint('EXPORT_SUCCESS')",
+    "category": "Mechanical",
+    "difficulty": "intermediate",
+    "components": ["helix", "wire_section", "swept_profile"],
+    "tags": ["spring", "compression", "helical", "swept"],
+    "freecad_apis": ["Part.makeHelix", "Part.makeCircle", "Part.Wire", "helix.makePipe"],
+    "engineering_concepts": ["swept profile", "helical geometry", "spring design"],
+    "score": 0.91,
+    "validation_criteria": {
+      "geometry": "Continuous solid tube following helix path",
+      "dimensions": "Wire dia 2mm, coil radius 15mm, height 80mm"
+    }
+  }
+]

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  archgen-api:
+    build: .
+    container_name: archgen-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./generated_models:/app/generated_models
+      - ./clients.json:/app/clients.json
+      - ./archgen_db.sqlite:/app/archgen_db.sqlite
+      - .env.local:/app/.env.local
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped

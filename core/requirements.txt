@@ -1,0 +1,50 @@
+# ============================================================
+# ArchgenCAD Backend — Python Dependencies
+# ============================================================
+# Install with:  pip install -r requirements.txt
+#
+# Note: FreeCAD is installed separately as a system package.
+# See SETUP.md for FreeCAD installation instructions.
+# ============================================================
+
+# ── Web Framework ────────────────────────────────────────────
+fastapi>=0.109.0
+uvicorn>=0.27.0
+python-multipart>=0.0.9
+pydantic>=2.0.0
+websockets>=12.0
+
+# ── LLM Orchestration ────────────────────────────────────────
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-core>=0.1.0
+langchain-openai>=0.0.5
+tiktoken>=0.6.0
+requests>=2.31.0
+
+# ── RAG & Vector Search ──────────────────────────────────────
+# Dense + sparse hybrid search with Pinecone
+pinecone>=3.1.0
+pinecone-text>=0.8.0
+# Reranking + embeddings via API (no local PyTorch needed)
+cohere>=5.0.0
+
+# ── 3D Geometry & Rendering ──────────────────────────────────
+trimesh>=4.0.0
+pyrender>=0.1.45
+PyOpenGL>=3.1.0
+Pillow>=10.0.0
+pyvista>=0.44.0
+
+# ── 2D Engineering Drawing Generation ───────────────────────
+matplotlib>=3.8.0
+scipy>=1.11.0
+
+# ── Math & ML Utilities ──────────────────────────────────────
+# Note: sentence-transformers removed — using Cohere API for embeddings
+numpy<2.0
+scikit-learn>=1.4.0
+
+# ── System Utilities ─────────────────────────────────────────
+psutil>=5.9.0
+python-dotenv>=1.0.0
