@@ -1,16 +1,10 @@
-# ArchgenCAD — Autonomous Text-to-CAD Generation System
+# ArchgenCAD | Autonomous Text-to-CAD Generation System
 
 <div align="center">
 
-![ArchgenCAD Banner](https://img.shields.io/badge/ArchgenCAD-Text%20to%20CAD-6366f1?style=for-the-badge&logo=data:image/svg+xml;base64,...)
+> **Convert natural language engineering prompts into verified, executable 3D CAD models, fully autonomously.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-archgen.in-6366f1?style=for-the-badge)](https://archgen.in)
-[![Status](https://img.shields.io/badge/Status-Production-22c55e?style=for-the-badge)](https://archgen.in)
-[![Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20FreeCAD%20%7C%20Pinecone%20%7C%20Cohere-0ea5e9?style=for-the-badge)](#)
-
-> **Convert natural language engineering prompts into verified, executable 3D CAD models — fully autonomously.**
-
-[▶ Watch Demo Video](#demo) · [Architecture Deep Dive](#architecture) · [Pipeline Stages](#pipeline) · [Evaluation](#evaluation)
+https://drive.google.com/file/d/178DGryJ9uAnrNcoaxoB6Ebb2siIE-0cZ/view?usp=sharing
 
 </div>
 
